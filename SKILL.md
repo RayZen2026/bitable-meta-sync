@@ -20,7 +20,7 @@ metadata:
   openclaw:
     emoji: 🔄
     id: bitable-meta-sync
-    version: 0.1.0
+    version: 0.2.0
     primaryEnv: BITABLE_META_SYNC_PROFILE
     requires:
       bins: [lark-cli, python3]
@@ -119,33 +119,33 @@ bitable-meta-sync apply \
 
 存储表是源表 schema 的"可编辑镜像"，**每行 = 源表的一个字段**。
 
-| 列组 | 列名 | 写入方 | 作用 |
+| 列组 | 列数 | 写入方 | 作用 |
 |---|---|---|---|
-| **主键** | `__row_id__` | SKILL | `fld_<field_id>` 或 `__control__` |
-| **原始** | `original_*` (8 列) | SKILL | 源表当前 schema 快照 |
-| **目标** | `target_*` (7 列) | **用户** | 想改成的 schema |
-| **状态** | `sync_status` 等 (4 列) | SKILL | 同步进度跟踪 |
-| **审计** | `created_at` 等 (4 列) | SKILL/飞书 | 时间戳 + 修改人 |
+| 主键 | 1 (`__row_id__`) | SKILL | `fld_<field_id>` 或 `__control__` |
+| 原始 | 7 (`original_*`) | SKILL | 源表当前 schema 快照 |
+| 目标 | 7 (`target_*`) | **用户** | 想改成的 schema |
+| 状态 | 4 | SKILL | 同步进度跟踪 |
+| 审计 | 3 | SKILL/飞书 | 时间戳 + 修改人 |
 
 详细 schema 见 [`references/storage-table-schema.md`](references/storage-table-schema.md)。
 
 ## 主类型分类
 
-飞书 27 种 type 字段归到 10 个主类型：
+飞书 27 种 type 字段归到 10 个主类型 + 1 个 system readonly 类别：
 
 | 主类型 | 飞书 type | 可编辑 property |
 |---|---|---|
-| text | 1/13/15 | 无 |
-| number | 2 (含 Progress/Currency/Rating) | formatter/currency_code/min/max |
-| select | 3/4 | options[] |
-| date | 5/1001/1002 | date_formatter |
-| checkbox | 7 | 无 |
-| person | 11 | multiple |
-| attachment | 17 | 无 |
-| link | 18/21 | ❌ table_id 只读 |
-| location | 22 | input_type |
-| group | 23 | 无 |
-| formula/auto_number/system | 20/1005/1003/1004 | ❌ 系统只读 |
+| text | text/phone/url | 无 |
+| number | number | formatter/currency_code/min/max |
+| select | select | options[] (单/多选) |
+| date | datetime | date_formatter |
+| checkbox | checkbox | 无 |
+| person | user | multiple |
+| attachment | attachment | 无 |
+| link | link | ❌ table_id 只读 |
+| location | location | input_type |
+| group | group_chat | multiple |
+| **system (只读)** | formula/auto_number/lookup/created_at/updated_at/created_by/updated_by | ❌ |
 
 详细映射见 [`references/field-type-mapping.md`](references/field-type-mapping.md)。
 
@@ -162,39 +162,15 @@ bitable-meta-sync apply \
 | **同名表冲突** | extract 时检测，abort 不覆盖 |
 | **可重入** | `sync_status=已同步` 字段跳过 |
 
-## 实施阶段
+## References
 
-- ✅ 阶段 0：骨架（路径 A argparse + preflight）
-- ✅ 阶段 1：extract（飞书 type 映射 + 22 列 schema + 控制行 + 同名冲突检测 + 系统字段跳过）
-- ⬜ 阶段 2：dry-run + diff 算法
-- ⬜ 阶段 3：apply + 安全机制
-- ⬜ 阶段 4：测试 + 文档
+| 文档 | 内容 |
+|---|---|
+| [implementation-plan.md](references/implementation-plan.md) | 4 阶段实施进度 + 决策记录 |
+| [storage-table-schema.md](references/storage-table-schema.md) | 存储表 20 列详细 |
+| [field-type-mapping.md](references/field-type-mapping.md) | 飞书 27 type → 主类型 |
+| [sync-rules.md](references/sync-rules.md) | 同步规则（允许/禁止 + diff 算法） |
+| [cli-examples.md](references/cli-examples.md) | 3 子命令完整示例 |
+| [lark-cli-quirks.md](references/lark-cli-quirks.md) | 13 条 lark-cli 1.0.81+ 已知坑 |
 
-当前版本仅完成阶段 0 + 阶段 1。
-
-## Files
-
-```
-bitable-meta-sync/
-├── SKILL.md                        # 本文件
-├── config.yaml                     # 配置文件
-├── .gitignore                      # Git 忽略
-├── scripts/
-│   ├── main.py                     # argparse 入口
-│   ├── bitable.py                  # lark-cli 包装
-│   ├── schema.py                   # 主类型映射 + property diff
-│   ├── extract.py                  # extract 流程
-│   ├── apply.py                    # apply 流程 (stub)
-│   ├── dry_run.py                  # dry-run 流程 (stub)
-│   ├── preflight.py                # 运行时自检
-│   └── common.py                   # 共享工具
-├── references/
-│   ├── field-type-mapping.md       # 飞书 27 type → 主类型
-│   ├── sync-rules.md               # 同步规则详细
-│   ├── storage-table-schema.md     # 存储表 schema
-│   ├── cli-examples.md             # 3 子命令示例
-│   └── lark-cli-quirks.md          # 已知 lark-cli 坑
-├── assets/
-│   └── schemas/                    # 输入/输出 JSON schema (预留)
-└── README.md                       # 项目说明
-```
+设计文档：飞书 docx `FQhtdvtUOopg53xfGP0ccUHdnTf`（PublicAssistant 目录）

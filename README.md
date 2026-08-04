@@ -27,13 +27,41 @@ python3 scripts/main.py apply \
   --source-url "..." --source-table "..." --storage-url "..." --confirm
 ```
 
+## 文件结构
+
+```
+bitable-meta-sync/
+├── SKILL.md                        # LLM 入口 (触发词/用法/安全)
+├── README.md                       # 本文件 (项目说明 + 目录树)
+├── config.yaml                     # SKILL 配置
+├── .gitignore                      # Git 忽略
+├── scripts/
+│   ├── main.py                     # argparse 入口
+│   ├── bitable.py                  # lark-cli 包装层
+│   ├── schema.py                   # 主类型映射 + storage table 22 列定义
+│   ├── extract.py                  # extract 流程
+│   ├── apply.py                    # apply 流程 (阶段 3 stub)
+│   ├── dry_run.py                  # dry-run 流程 (阶段 2 stub)
+│   ├── preflight.py                # 运行时自检 (lark-cli + 凭据 + 磁盘)
+│   └── common.py                   # 共享工具 (run_lark_cli 包装)
+└── references/
+    ├── implementation-plan.md      # 4 阶段实施进度 + 决策记录
+    ├── field-type-mapping.md       # 飞书 27 type → 10 主类型映射
+    ├── storage-table-schema.md     # 存储表 20 列详细
+    ├── sync-rules.md               # 同步规则 (允许/禁止 + diff 算法)
+    ├── cli-examples.md             # 3 子命令示例
+    └── lark-cli-quirks.md          # 13 条 lark-cli 1.0.81+ 已知坑
+```
+
 ## 当前状态
 
 - ✅ 阶段 0：骨架
-- ✅ 阶段 1：extract
-- ⬜ 阶段 2：dry-run + diff
-- ⬜ 阶段 3：apply
-- ⬜ 阶段 4：测试 + 文档
+- ✅ 阶段 1：extract（端到端跑通）
+- ⬜ 阶段 2：dry-run + diff 算法
+- ⬜ 阶段 3：apply + 安全机制
+- ⬜ 阶段 4：测试 + 完整文档
+
+详细进度见 [references/implementation-plan.md](references/implementation-plan.md)
 
 ## License
 
