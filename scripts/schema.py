@@ -115,42 +115,42 @@ T_URL_STYLE = "url"  # text with style.type=url
 
 # 存储表列定义: (column_name, lark_field_type, options_or_style, written_by)
 STORAGE_TABLE_COLUMNS: List[Dict[str, Any]] = [
-    # 主键
+    # 主键 (内部, 用户不可见)
     {"name": "__row_id__", "type": T_TEXT, "description": "内部唯一 ID (fld_<id> 或 __control__)",
      "written_by": "SKILL", "hidden": True},
 
-    # 原始列 (8)
-    {"name": "original_field_id", "type": T_TEXT, "description": "源表 fldXXX",
+    # 原始列 (8) - 源表当前 schema 快照
+    {"name": "原始字段ID", "type": T_TEXT, "description": "源表 fldXXX",
      "written_by": "SKILL"},
-    {"name": "original_field_name", "type": T_TEXT, "description": "源表当前字段名",
+    {"name": "原始字段名", "type": T_TEXT, "description": "源表当前字段名",
      "written_by": "SKILL"},
-    {"name": "original_field_type", "type": T_TEXT, "description": "飞书 type (text/select/number/...)",
+    {"name": "原始类型", "type": T_TEXT, "description": "飞书 type (text/select/number/...)",
      "written_by": "SKILL"},
-    {"name": "original_field_description", "type": T_TEXT, "description": "源表当前描述",
+    {"name": "原始描述", "type": T_TEXT, "description": "源表当前描述",
      "written_by": "SKILL"},
-    {"name": "original_required", "type": T_CHECKBOX, "description": "源表当前必填 (预留)",
+    {"name": "原始必填", "type": T_CHECKBOX, "description": "源表当前必填 (预留)",
      "written_by": "SKILL"},
-    {"name": "original_options_json", "type": T_TEXT, "description": "select options JSON",
+    {"name": "原始选项JSON", "type": T_TEXT, "description": "select options JSON",
      "written_by": "SKILL"},
-    {"name": "original_property_json", "type": T_TEXT, "description": "完整字段 JSON (含 style/multiple/options)",
+    {"name": "原始属性JSON", "type": T_TEXT, "description": "完整字段 JSON (含 style/multiple/options)",
      "written_by": "SKILL"},
 
-    # 目标列 (7)
-    {"name": "target_field_name", "type": T_TEXT, "description": "目标字段名 (空=不变)",
+    # 目标列 (7) - 用户编辑
+    {"name": "目标字段名", "type": T_TEXT, "description": "目标字段名 (空=不变)",
      "written_by": "USER"},
-    {"name": "target_field_type", "type": T_TEXT, "description": "目标 type (空=不变, 必须同 type)",
+    {"name": "目标类型", "type": T_TEXT, "description": "目标 type (空=不变, 必须同 type)",
      "written_by": "USER"},
-    {"name": "target_field_description", "type": T_TEXT, "description": "目标描述 (空=不变)",
+    {"name": "目标描述", "type": T_TEXT, "description": "目标描述 (空=不变)",
      "written_by": "USER"},
-    {"name": "target_required", "type": T_CHECKBOX, "description": "目标必填 (空=不变, 预留)",
+    {"name": "目标必填", "type": T_CHECKBOX, "description": "目标必填 (空=不变, 预留)",
      "written_by": "USER"},
-    {"name": "target_options_json", "type": T_TEXT, "description": "目标 options JSON (空=不变)",
+    {"name": "目标选项JSON", "type": T_TEXT, "description": "目标 options JSON (空=不变)",
      "written_by": "USER"},
-    {"name": "target_property_json", "type": T_TEXT, "description": "目标 property JSON (空=不变)",
+    {"name": "目标属性JSON", "type": T_TEXT, "description": "目标 property JSON (空=不变)",
      "written_by": "USER"},
 
-    # 状态列 (4)
-    {"name": "sync_status", "type": T_SELECT, "description": "未同步/待更新/已同步/失败/跳过/__control__",
+    # 状态列 (4) - SKILL 同步跟踪
+    {"name": "同步状态", "type": T_SELECT, "description": "未同步/待更新/已同步/失败/跳过/__control__",
      "written_by": "SKILL", "options": [
          {"name": "__control__", "hue": "Gray", "lightness": "Standard"},
          {"name": "未同步", "hue": "Gray", "lightness": "Lighter"},
@@ -160,17 +160,17 @@ STORAGE_TABLE_COLUMNS: List[Dict[str, Any]] = [
          {"name": "跳过", "hue": "Gray", "lightness": "Light"},
          {"name": "已删除", "hue": "Orange", "lightness": "Lighter"},
      ]},
-    {"name": "last_sync_at", "type": T_DATETIME, "description": "上次 apply 时间",
+    {"name": "最后同步时间", "type": T_DATETIME, "description": "上次 apply 时间",
      "written_by": "SKILL", "style": {"format": "yyyy-MM-dd HH:mm"}},
-    {"name": "diff_summary", "type": T_TEXT, "description": "人类可读 diff 摘要",
+    {"name": "差异摘要", "type": T_TEXT, "description": "人类可读 diff 摘要",
      "written_by": "SKILL"},
-    {"name": "notes", "type": T_TEXT, "description": "失败原因 / 备注 / 用户标记",
+    {"name": "备注", "type": T_TEXT, "description": "失败原因 / 备注 / 用户标记",
      "written_by": "USER"},
 
-    # 审计列 (2 飞书自动 + 2 SKILL 写)
-    {"name": "created_at", "type": T_DATETIME, "description": "该行首次写入时间",
+    # 审计列 (3) - 飞书自动 + SKILL 写
+    {"name": "创建时间", "type": T_DATETIME, "description": "该行首次写入时间",
      "written_by": "SKILL", "style": {"format": "yyyy-MM-dd HH:mm"}},
-    {"name": "created_by", "type": T_USER, "description": "创建人 (飞书自动)",
+    {"name": "创建人", "type": T_USER, "description": "创建人 (飞书自动)",
      "written_by": "FEISHU_AUTO"},
 ]
 

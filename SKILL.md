@@ -22,7 +22,7 @@ metadata:
   openclaw:
     emoji: 🔄
     id: bitable-meta-sync
-    version: 0.2.3
+    version: 0.2.4
     primaryEnv: BITABLE_META_SYNC_PROFILE
     requires:
       bins: [lark-cli, python3]

@@ -46,6 +46,37 @@
 
 **真实使用 2 次** (wiki URL + base URL 回归), 0 bug fix.
 
+## v0.2.4 增量改进 (2026-08-04)
+
+v0.2.3 真实使用后, 任锐反馈存储表 20 列全是英文 (original_field_name / target_* / sync_status), 对非技术用户不友好。**全部改为中文列名**:
+
+| 旧 (英文) | 新 (中文) |
+|---|---|
+| original_field_id | 原始字段ID |
+| original_field_name | 原始字段名 |
+| original_field_type | 原始类型 |
+| original_field_description | 原始描述 |
+| original_required | 原始必填 |
+| original_options_json | 原始选项JSON |
+| original_property_json | 原始属性JSON |
+| target_field_name | 目标字段名 |
+| target_field_type | 目标类型 |
+| target_field_description | 目标描述 |
+| target_required | 目标必填 |
+| target_options_json | 目标选项JSON |
+| target_property_json | 目标属性JSON |
+| sync_status | 同步状态 |
+| last_sync_at | 最后同步时间 |
+| diff_summary | 差异摘要 |
+| notes | 备注 |
+| created_at | 创建时间 |
+| created_by | 创建人 |
+| __row_id__ | __row_id__ (内部 hidden, 不动) |
+
+**额外修复**: storage_url host 之前写的是 placeholder `https://xxx.feishu.cn/`, 改为真实 `https://bggc.feishu.cn/`.
+
+**真实使用 1 次**: 44 字段表 9 秒成功, 飞书 API 返回的字段名都是中文.
+
 ## v0.2.3 增量改进 (2026-08-04)
 
 ### 触发关键词扩宽 (LRN-20260804-048)

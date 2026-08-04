@@ -104,15 +104,15 @@ def _field_to_storage_row(
     return {
         "fields": {
             "__row_id__": row_id,
-            "original_field_id": field_id,
-            "original_field_name": field_name,
-            "original_field_type": display,
-            "original_field_description": description,
-            "original_options_json": options_json,
-            "original_property_json": property_json,
+            "原始字段ID": field_id,
+            "原始字段名": field_name,
+            "原始类型": display,
+            "原始描述": description,
+            "原始选项JSON": options_json,
+            "原始属性JSON": property_json,
             # target 列全空
-            "sync_status": sync_status,
-            "created_at": _now_str(),
+            "同步状态": sync_status,
+            "创建时间": _now_str(),
         }
     }
 
@@ -122,12 +122,12 @@ def _build_control_row(source_table_name: str, source_url: str) -> Dict[str, Any
     return {
         "fields": {
             "__row_id__": "__control__",
-            "original_field_id": "__control__",
-            "original_field_name": source_table_name,
-            "original_field_type": "__control__",
-            "sync_status": "__control__",
-            "diff_summary": f"source_url={source_url}",
-            "created_at": _now_str(),
+            "原始字段ID": "__control__",
+            "原始字段名": source_table_name,
+            "原始类型": "__control__",
+            "同步状态": "__control__",
+            "差异摘要": f"source_url={source_url}",
+            "创建时间": _now_str(),
         }
     }
 
@@ -161,7 +161,7 @@ def extract(
     if new_base:
         actual_base_name = new_base_name or f"{source_table_name}_SCHEMA"
         storage_app_token = bitable.create_base(actual_base_name, folder_token)
-        storage_url = f"https://xxx.feishu.cn/base/{storage_app_token}"
+        storage_url = f"https://bggc.feishu.cn/base/{storage_app_token}"
         logger.info("new base mode: created %s (token=%s)",
                     actual_base_name, storage_app_token[:8] + "...")
     else:

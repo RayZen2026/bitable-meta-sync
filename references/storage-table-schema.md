@@ -7,39 +7,39 @@
 | 列名 | 飞书 type | 写入方 | 作用 |
 |---|---|---|---|
 | `__row_id__` | text (隐藏) | SKILL | 内部唯一 ID, `fld_<field_id>` 或 `__control__` |
-| `original_field_id` | text | SKILL | 源表 fldXXX |
-| `original_field_name` | text | SKILL | 源表当前字段名 |
-| `original_field_type` | text | SKILL | 飞书 type (text/select/number/...) |
-| `original_field_description` | text | SKILL | 源表当前描述 |
-| `original_required` | checkbox | SKILL | 源表当前必填 (预留) |
-| `original_options_json` | text | SKILL | select options JSON |
-| `original_property_json` | text | SKILL | 完整字段 JSON (style/multiple/options 等) |
-| `target_field_name` | text | **用户** | 目标字段名 (空=不变) |
-| `target_field_type` | text | **用户** | 目标 type (空=不变, 必须同 type) |
-| `target_field_description` | text | **用户** | 目标描述 (空=不变) |
-| `target_required` | checkbox | **用户** | 目标必填 (空=不变, 预留) |
-| `target_options_json` | text | **用户** | 目标 options JSON (空=不变) |
-| `target_property_json` | text | **用户** | 目标 property JSON (空=不变) |
-| `sync_status` | select | SKILL | __control__/未同步/待更新/已同步/失败/跳过/已删除 |
-| `last_sync_at` | datetime | SKILL | 上次 apply 时间 |
-| `diff_summary` | text | SKILL | 人类可读 diff 摘要 |
-| `notes` | text | **用户** | 失败原因 / 备注 / 用户标记 |
-| `created_at` | datetime | SKILL | 该行首次写入时间 |
-| `created_by` | user | 飞书自动 | 创建人 |
+| `原始字段ID` | text | SKILL | 源表 fldXXX |
+| `原始字段名` | text | SKILL | 源表当前字段名 |
+| `原始类型` | text | SKILL | 飞书 type (text/select/number/...) |
+| `原始描述` | text | SKILL | 源表当前描述 |
+| `原始必填` | checkbox | SKILL | 源表当前必填 (预留) |
+| `原始选项JSON` | text | SKILL | select options JSON |
+| `原始属性JSON` | text | SKILL | 完整字段 JSON (style/multiple/options 等) |
+| `目标字段名` | text | **用户** | 目标字段名 (空=不变) |
+| `目标类型` | text | **用户** | 目标 type (空=不变, 必须同 type) |
+| `目标描述` | text | **用户** | 目标描述 (空=不变) |
+| `目标必填` | checkbox | **用户** | 目标必填 (空=不变, 预留) |
+| `目标选项JSON` | text | **用户** | 目标 options JSON (空=不变) |
+| `目标属性JSON` | text | **用户** | 目标 property JSON (空=不变) |
+| `同步状态` | select | SKILL | __control__/未同步/待更新/已同步/失败/跳过/已删除 |
+| `最后同步时间` | datetime | SKILL | 上次 apply 时间 |
+| `差异摘要` | text | SKILL | 人类可读 diff 摘要 |
+| `备注` | text | **用户** | 失败原因 / 备注 / 用户标记 |
+| `创建时间` | datetime | SKILL | 该行首次写入时间 |
+| `创建人` | user | 飞书自动 | 创建人 |
 
-## sync_status 选项
+## 同步状态 选项
 
 - `__control__`: 控制行专用
 - `未同步`: 新建, 未编辑
 - `待更新`: 用户已改 target, 待 apply
 - `已同步`: apply 成功
-- `失败`: apply 失败, notes 写原因
+- `失败`: apply 失败, 备注 写原因
 - `跳过`: 系统字段 (formula/auto_number), apply 不动
 - `已删除`: 源表字段被删除, 标"已删除"
 
 ## 控制行 (__row_id__ = __control__)
 
 第 1 行, 记录**表级元信息**:
-- `original_field_name`: 源表名
-- `diff_summary`: `source_url=...`
-- `notes`: 同步策略 (all/specified)
+- `原始字段名`: 源表名
+- `差异摘要`: `source_url=...`
+- `备注`: 同步策略 (all/specified)

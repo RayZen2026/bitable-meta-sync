@@ -30,7 +30,7 @@ logger = logging.getLogger("bitable-meta-sync")
 def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="bitable-meta-sync",
-        description="飞书多维表格字段元数据双向同步工具 v0.2.3 (extract + wiki URL + _SCHEMA 默认 + --new-base 新建 base)",
+        description="飞书多维表格字段元数据双向同步工具 v0.2.4 (中文列名 + extract + wiki URL + _SCHEMA 默认 + --new-base 新建 base)",
     )
     sub = parser.add_subparsers(dest="subcommand", required=True)
 
