@@ -1,0 +1,18 @@
+# bitable-meta-sync SKILL 配置
+# =====================================
+# 设计方案（业务规则、决策理由）在飞书 design doc FQhtdvtUOopg53xfGP0ccUHdnTf
+# 凭据类不进 yaml（OpenClaw env 注入，env 变量名见 SKILL.md metadata.openclaw.requires.env）
+
+# === 飞书访问 ===
+feishu:
+  # 默认 lark-cli profile (--as user 身份)
+  default_profile: ${BITABLE_META_SYNC_PROFILE}
+
+# === 同步策略 ===
+sync:
+  # 失败字段处理
+  conflict_strategy: abort    # abort | skip | force
+  # apply scope
+  default_scope: all          # all | specified
+  # 二次确认
+  require_confirm: true       # TTY 模式需要输入"确认", --confirm 跳过
