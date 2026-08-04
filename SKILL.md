@@ -4,6 +4,8 @@ description: |
   飞书多维表格字段元数据双向同步 SKILL — 把源表的字段 schema（字段名/类型/必填/选项/描述）
   抽取到一张可编辑的"存储表"，让用户在飞书 UI 里改字段配置，再把变更同步回源表。
   
+  支持两种 extract 目标: (1) 现有 base 内新 table (2) 新建 base (--new-base)
+  
   解决：跨表 schema 不一致、字段改名漏改、字段类型改错无法审计等问题。
   
   Trigger: 字段元数据同步 / 飞书 schema 双向同步 / bitable meta sync /
@@ -20,7 +22,7 @@ metadata:
   openclaw:
     emoji: 🔄
     id: bitable-meta-sync
-    version: 0.2.2
+    version: 0.2.3
     primaryEnv: BITABLE_META_SYNC_PROFILE
     requires:
       bins: [lark-cli, python3]
@@ -38,6 +40,12 @@ metadata:
         - bitable meta sync
         - bitable 字段配置同步
         - 字段改名批量同步
+        # v0.2.3 新增: 扩宽自然语言触发
+        - 提取多维表格
+        - 复制表结构
+        - meta 抽取
+        - 字段表反向同步
+        - 多维表格备份
 ---
 
 # bitable-meta-sync SKILL
@@ -68,7 +76,9 @@ bitable-meta-sync <extract|apply|dry-run> [options]
 
 ### extract
 
-抽取源表字段 schema 到存储表（首次或重建）。
+抽取源表字段 schema 到存储表（首次或重建）。两种模式互斥：
+
+**模式 1**：在已有 base 内创建新 table
 
 ```bash
 bitable-meta-sync extract \
@@ -77,12 +87,27 @@ bitable-meta-sync extract \
   --storage-url <bitable_url>
 ```
 
-- `--source-url`：源 bitable URL (https://xxx.feishu.cn/base/<token>)
-- `--source-table`：源表名（如"升级售后判责规则表"）
-- `--storage-url`：目标 bitable URL（存储表建在这）
-- `--storage-table`：存储表名（缺省 = source-table）
+**模式 2**：新建一个 base 作为 storage（"新多维表格"语义）
 
-**返回**：JSON 报告（含 editable / readonly 字段分类）
+```bash
+bitable-meta-sync extract \
+  --source-url <bitable_url> \
+  --source-table <table_name> \
+  --new-base \
+  [--new-base-name <name>]   # 缺省 = <source-table>_SCHEMA
+  [--folder-token <token>]   # 缺省 = 我的空间 root
+```
+
+**参数**：
+- `--source-url`：源 bitable URL（支持 base URL 和 wiki URL）
+- `--source-table`：源表名（如"升级售后判责规则表"）
+- `--storage-url`：目标 bitable URL（模式 1 用）
+- `--new-base`：创建新 base（模式 2 用，与 --storage-url 互斥）
+- `--new-base-name`：新 base 名称（缺省 = source-table + _SCHEMA）
+- `--folder-token`：新 base 所在 folder（缺省 = root / 我的空间）
+- `--storage-table`：存储表名（缺省 = source-table + _SCHEMA）
+
+**返回**：JSON 报告（含 editable / readonly 字段分类 + 新 base token 若 --new-base）
 
 ### dry-run
 

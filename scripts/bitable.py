@@ -20,6 +20,29 @@ from scripts.common import run_lark_cli
 logger = logging.getLogger("bitable-meta-sync")
 
 
+def create_base(name: str, folder_token: Optional[str] = None) -> str:
+    """创建新 bitable app, 返回 base_token
+
+    canonical 格式 (lark-cli 1.0.81+):
+      lark-cli base +base-create --name <name> [--folder-token <token>]
+      (不指定 folder_token = 我的空间 root)
+    """
+    args = ["base", "+base-create", "--name", name]
+    if folder_token:
+        args += ["--folder-token", folder_token]
+    r = run_lark_cli(args)
+    if not r["ok"]:
+        raise RuntimeError(f"base-create 失败: {r.get('error', {}).get('message')}")
+    data = r["data"]
+    # 响应: {"base": {"token": "XXX", "name": "YYY"}}
+    base = data.get("base") or data
+    token = base.get("token") or base.get("base_token")
+    if not token:
+        raise RuntimeError(f"base-create 响应缺 token: {data}")
+    logger.info("new base created: %s (token=%s)", name, token[:8] + "...")
+    return token
+
+
 def list_tables(app_token: str) -> List[Dict[str, Any]]:
     """列出 bitable 下所有表
 

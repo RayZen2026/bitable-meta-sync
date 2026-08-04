@@ -28,6 +28,30 @@ python3 scripts/main.py extract \
 python3 scripts/main.py extract ... --skip-preflight
 ```
 
+新建 base 作为 storage (v0.2.3+):
+```bash
+python3 scripts/main.py extract \
+  --source-url "https://bggc.feishu.cn/wiki/IM07wGjh9iVU64kNu8gcjirQn0K?table=tblEMESCIIr4pqz8" \
+  --source-table "升级售后商家审核任务表" \
+  --new-base \
+  --new-base-name "升级售后商家审核任务表_SCHEMA" \
+  --folder-token "<可选: PublicAssistant 目录 token>"
+```
+
+输出:
+```json
+{
+  "ok": true,
+  "storage_table_id": "tblXXX",
+  "storage_table_name": "升级售后商家审核任务表_SCHEMA",
+  "total_fields": 44,
+  "editable_fields": 39,
+  "readonly_fields": 5
+}
+```
+
+**注意**: --storage-url 与 --new-base 互斥, 同时传会报错。
+
 ## dry-run (阶段 2 stub)
 
 ```bash

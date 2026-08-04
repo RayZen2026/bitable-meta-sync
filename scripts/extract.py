@@ -135,17 +135,37 @@ def _build_control_row(source_table_name: str, source_url: str) -> Dict[str, Any
 def extract(
     source_url: str,
     source_table_name: str,
-    storage_url: str,
+    storage_url: Optional[str] = None,
     storage_table_name: Optional[str] = None,
+    new_base: bool = False,
+    new_base_name: Optional[str] = None,
+    folder_token: Optional[str] = None,
 ) -> Dict[str, Any]:
-    """extract 主流程"""
+    """extract 主流程
+
+    两种使用模式 (互斥):
+    1. 现有 base + 新 table: extract(source_url, source_table, storage_url=...)
+    2. 新 base: extract(source_url, source_table, new_base=True, new_base_name=..., folder_token=...)
+    """
+    if new_base and storage_url:
+        raise ValueError("不能同时传 storage_url 和 new_base=True (互斥)")
+    if not new_base and not storage_url:
+        raise ValueError("必须传 storage_url 或 new_base=True 之一")
+
     # 默认加 _SCHEMA 后缀: 避免与源表同名冲突 + 与设计文档一致
     storage_table_name = storage_table_name or f"{source_table_name}_SCHEMA"
 
-    # 1. 解析 URL
+    # 1. 解析 URL + (可选) 创建新 base
     from scripts.common import parse_bitable_url
     source_app_token = parse_bitable_url(source_url)
-    storage_app_token = parse_bitable_url(storage_url)
+    if new_base:
+        actual_base_name = new_base_name or f"{source_table_name}_SCHEMA"
+        storage_app_token = bitable.create_base(actual_base_name, folder_token)
+        storage_url = f"https://xxx.feishu.cn/base/{storage_app_token}"
+        logger.info("new base mode: created %s (token=%s)",
+                    actual_base_name, storage_app_token[:8] + "...")
+    else:
+        storage_app_token = parse_bitable_url(storage_url)
     logger.info("source app=%s..., storage app=%s...",
                 source_app_token[:8], storage_app_token[:8])
 

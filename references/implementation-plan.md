@@ -46,6 +46,37 @@
 
 **真实使用 2 次** (wiki URL + base URL 回归), 0 bug fix.
 
+## v0.2.3 增量改进 (2026-08-04)
+
+### 触发关键词扩宽 (LRN-20260804-048)
+任锐提出 SKILL 不能从自然语言自动触发。原 trigger 只覆盖 "字段元数据 / schema / 字段配置 / 字段改名" 4 个专业词。任锐用的是 "提取 meta 信息" 等口语化表达 → 加 5 个口语化 trigger:
+
+- 提取多维表格
+- 复制表结构
+- meta 抽取
+- 字段表反向同步
+- 多维表格备份
+
+### 新增 --new-base 模式 (LRN-20260804-047)
+任锐提出 "新的多维表格" 歧义问题: 实际指 **新 base**, 不是新 table (我之前默认成新 table 是错的, LRN-20260804-042 要作废)。新加 3 个 flag:
+
+| flag | 作用 | 缺省 |
+|---|---|---|
+| --new-base | 创建新 bitable app 作为 storage | False |
+| --new-base-name | 新 base 名称 | source-table + _SCHEMA |
+| --folder-token | 新 base 所在 folder | 我的空间 (root) |
+
+--storage-url 与 --new-base 互斥 (同时传报错)。
+
+### 实现要点
+- scripts/bitable.py: 加 create_base(name, folder_token=None) → 调 lark-cli base +base-create
+- scripts/extract.py: extract() 加 new_base / new_base_name / folder_token 参数; storage_url 改 Optional
+- scripts/main.py: extract argparse 加 3 个新 flag; preflight 用 source_url 兜底 (new_base 模式下 storage_url 还没创建)
+
+### 真实使用 2 次
+- new_base 模式 44 字段: 9 秒成功, 新 base YTWqb4VzJaTphvsjuMyc5DPSnkg (已清理)
+- old mode 18 字段回归: 5 秒成功 (无回归)
+
 ## 阶段 2：dry-run + diff 算法 ⬜ (待启动)
 
 - 拉存储表所有 records

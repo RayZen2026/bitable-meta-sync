@@ -30,7 +30,7 @@ logger = logging.getLogger("bitable-meta-sync")
 def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="bitable-meta-sync",
-        description="飞书多维表格字段元数据双向同步工具 v0.2.2 (extract + wiki URL + _SCHEMA 默认)",
+        description="飞书多维表格字段元数据双向同步工具 v0.2.3 (extract + wiki URL + _SCHEMA 默认 + --new-base 新建 base)",
     )
     sub = parser.add_subparsers(dest="subcommand", required=True)
 
@@ -38,9 +38,16 @@ def _build_parser() -> argparse.ArgumentParser:
     p_ext = sub.add_parser("extract", help="抽取源表字段 schema 到存储表")
     p_ext.add_argument("--source-url", required=True, help="源 bitable URL")
     p_ext.add_argument("--source-table", required=True, help="源表名")
-    p_ext.add_argument("--storage-url", required=True, help="存储表所在的 bitable URL")
+    p_ext.add_argument("--storage-url", default=None,
+                       help="存储表所在的 bitable URL (与 --new-base 互斥)")
     p_ext.add_argument("--storage-table", default=None,
-                       help="存储表名 (缺省 = source-table)")
+                       help="存储表名 (缺省 = source-table + _SCHEMA 后缀)")
+    p_ext.add_argument("--new-base", action="store_true",
+                       help="创建新 bitable app 作为 storage (与 --storage-url 互斥)")
+    p_ext.add_argument("--new-base-name", default=None,
+                       help="新 base 名称 (缺省 = source-table + _SCHEMA)")
+    p_ext.add_argument("--folder-token", default=None,
+                       help="新 base 所在 folder token (缺省 = 我的空间 root)")
     p_ext.add_argument("--skip-preflight", action="store_true",
                        help="跳过 preflight 自检 (调试用)")
 
@@ -71,7 +78,9 @@ def _run_extract(args) -> int:
     """extract 子命令"""
     if not args.skip_preflight:
         try:
-            preflight(args.source_url, args.storage_url)
+            # preflight 源表; storage 在 new_base 模式下由 extract 内部创建
+            # 这里用 source_url 兜底, 实际存储表创建后 extract 会再确认
+            preflight(args.source_url, args.storage_url or args.source_url)
         except PreflightError as e:
             logger.error("preflight 失败: %s", e)
             print(json.dumps({"ok": False, "error": {"code": "E_PREFLIGHT", "message": str(e)}},
@@ -84,6 +93,9 @@ def _run_extract(args) -> int:
             source_table_name=args.source_table,
             storage_url=args.storage_url,
             storage_table_name=args.storage_table,
+            new_base=args.new_base,
+            new_base_name=args.new_base_name,
+            folder_token=args.folder_token,
         )
         print(json.dumps(result, ensure_ascii=False, indent=2))
         return 0

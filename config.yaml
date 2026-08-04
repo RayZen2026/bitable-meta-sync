@@ -7,6 +7,9 @@
 feishu:
   # 默认 lark-cli profile (--as user 身份)
   default_profile: ${BITABLE_META_SYNC_PROFILE}
+  # 新 base 默认所在 folder token (--new-base 模式生效)
+  # 留空 = 我的空间 (root); 设为具体 token 放指定目录
+  default_folder_token: ""
 
 # === 同步策略 ===
 sync:
