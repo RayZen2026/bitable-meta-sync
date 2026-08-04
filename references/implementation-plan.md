@@ -10,14 +10,18 @@
 - 共享工具：common.py (run_lark_cli 包装) / schema.py (主类型映射)
 - 端到端骨架跑通
 
-## 阶段 1：extract ✅ (2026-08-04 完成)
+## 阶段 1：extract ✅ (2026-08-04 完成, 真实使用验证)
 
 - 源表 fields 拉取（lark-cli 1.0.81+ canonical format）
 - 主类型分类（10 大主类型 + system readonly）
 - 存储表 22 列 schema（20 列实际 + 飞书自动审计列）
 - 控制行（__row_id__ = __control__）写入
 - 同名表冲突检测
-- 端到端验证：升级售后判责规则表（18 字段）→ 19 records 写入
+- 端到端验证：
+  - **测试 1**（开发期）：升级售后判责规则表（18 字段）→ 19 records 写入
+  - **测试 2**（真实使用，2026-08-04 19:40-19:41 UTC）：升级售后商家审核任务表（44 字段）→ 45 records 写入, 19 秒, 无 bug fix
+- readonly 字段处理：5 项（4 formula + 1 updated_at）全部正确分类
+- **DEC-20260804-008 已解决**：飞书系统字段 type 是字符串（`created_at` / `updated_at` / `created_by` / `updated_by`），不是 1003/1004 数字枚举
 
 **关键技术发现**（详见 [lark-cli-quirks.md](lark-cli-quirks.md)）：
 1. type 是字符串（不是数字）
@@ -78,4 +82,4 @@
 - DEC-20260804-005 存储表位置任选
 - DEC-20260804-006 失败隔离
 - DEC-20260804-007 scope=specified 用 notes 标记
-- DEC-20260804-008 1003/1004 系统字段 type 编号（待查）
+- DEC-20260804-008 系统字段 type 编号 ✅ 已解决（type 是字符串, schema.py READONLY_TYPES 已包含）

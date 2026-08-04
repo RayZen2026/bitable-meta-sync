@@ -56,10 +56,16 @@ bitable-meta-sync/
 ## 当前状态
 
 - ✅ 阶段 0：骨架
-- ✅ 阶段 1：extract（端到端跑通）
+- ✅ 阶段 1：extract（端到端跑通 + 真实使用 1 次成功, 44 字段表）
 - ⬜ 阶段 2：dry-run + diff 算法
 - ⬜ 阶段 3：apply + 安全机制
-- ⬜ 阶段 4：测试 + 完整文档
+- ⬜ 阶段 4：测试 + 完整文档（含 CHANGELOG）
+
+### 真实使用记录（v0.2.0）
+
+| 日期 | 源表 | 字段数 | 耗时 | 结果 |
+|---|---|---|---|---|
+| 2026-08-04 19:40 UTC | 升级售后商家审核任务表 | 44 | 19 秒 | ✅ 无 bug fix |
 
 详细进度见 [references/implementation-plan.md](references/implementation-plan.md)
 
