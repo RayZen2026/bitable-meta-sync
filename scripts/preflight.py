@@ -74,13 +74,14 @@ def check_bitable_access(bitable_url: str, mode: str = "read") -> bool:
 
     mode: "read" 或 "write"
     """
-    # 从 URL 提取 token
+    # 从 URL 提取 token (支持 base URL 和 wiki URL)
     # https://bggc.feishu.cn/base/<token>
-    import re
-    m = re.search(r"/base/([A-Za-z0-9]+)", bitable_url)
-    if not m:
-        raise PreflightError(f"bitable URL 解析失败: {bitable_url}")
-    token = m.group(1)
+    # https://bggc.feishu.cn/wiki/<node_token>
+    from scripts.common import parse_bitable_url
+    try:
+        token = parse_bitable_url(bitable_url)
+    except (ValueError, RuntimeError) as e:
+        raise PreflightError(f"bitable URL 解析失败: {e}")
 
     # 用 base +table-list 探测
     cmd = ["lark-cli", "--as", "user", "base", "+table-list",

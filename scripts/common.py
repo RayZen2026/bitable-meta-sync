@@ -32,13 +32,40 @@ def setup_logger(level: str = "INFO") -> None:
 def parse_bitable_url(url: str) -> str:
     """从 bitable URL 提取 app_token (base token)
 
-    支持: https://bggc.feishu.cn/base/<token>?table=<table_id>
-          https://xxx.feishu.cn/base/<token>
+    支持:
+      - https://xxx.feishu.cn/base/<token>?table=<table_id>
+      - https://xxx.feishu.cn/wiki/<node_token>?table=<table_id>
+        (调 lark-cli wiki +node-get 解析出 obj_token)
     """
+    # 1. 直接 base URL
     m = re.search(r"/base/([A-Za-z0-9]+)", url)
-    if not m:
-        raise ValueError(f"bitable URL 解析失败: {url}")
-    return m.group(1)
+    if m:
+        return m.group(1)
+
+    # 2. wiki URL → 调 lark-cli wiki +node-get 解析
+    if "/wiki/" in url:
+        result = run_lark_cli(["wiki", "+node-get", "--node-token", url])
+        if not result["ok"]:
+            raise RuntimeError(
+                f"wiki URL 解析失败: {url}: {result['error'].get('message', 'unknown')}"
+            )
+        data = result["data"]
+        # data 是扁平结构: {obj_token, obj_type, ...}
+        obj_token = data.get("obj_token")
+        if not obj_token:
+            raise RuntimeError(f"wiki URL 解析失败: {url}: 缺 obj_token")
+        obj_type = data.get("obj_type")
+        if obj_type and obj_type != "bitable":
+            raise RuntimeError(
+                f"wiki URL 解析失败: {url}: obj_type={obj_type} (非 bitable, 不支持)"
+            )
+        logger.info(
+            "wiki URL 解析: %s -> base_token=%s (obj_type=%s)",
+            url[:60], obj_token[:8] + "...", obj_type,
+        )
+        return obj_token
+
+    raise ValueError(f"bitable URL 解析失败: {url}")
 
 
 def parse_table_id_from_url(url: str) -> Optional[str]:

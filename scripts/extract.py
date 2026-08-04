@@ -139,7 +139,8 @@ def extract(
     storage_table_name: Optional[str] = None,
 ) -> Dict[str, Any]:
     """extract 主流程"""
-    storage_table_name = storage_table_name or source_table_name
+    # 默认加 _SCHEMA 后缀: 避免与源表同名冲突 + 与设计文档一致
+    storage_table_name = storage_table_name or f"{source_table_name}_SCHEMA"
 
     # 1. 解析 URL
     from scripts.common import parse_bitable_url

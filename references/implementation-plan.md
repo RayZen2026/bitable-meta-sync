@@ -35,6 +35,17 @@
 9. select 写入时 value 必须在预定义 options 内
 10. select 读取时 value 是 array
 
+## v0.2.2 增量改进 (2026-08-04)
+
+阶段 1 真实使用后发现 2 个 SKILL bug, 修复后端到端 6-8 秒:
+
+| LRN | 问题 | 修复 |
+|---|---|---|
+| LRN-20260804-039 | parse_bitable_url 只支持 /base/&lt;token&gt; | 调 lark-cli wiki +node-get 解析 wiki URL → base_token; preflight.py 同步复用 |
+| LRN-20260804-040 | storage_table_name 默认是源表名 (冲突) | 默认改为 源表名_SCHEMA 后缀 |
+
+**真实使用 2 次** (wiki URL + base URL 回归), 0 bug fix.
+
 ## 阶段 2：dry-run + diff 算法 ⬜ (待启动)
 
 - 拉存储表所有 records

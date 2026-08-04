@@ -66,6 +66,8 @@ bitable-meta-sync/
 | 日期 | 源表 | 字段数 | 耗时 | 结果 |
 |---|---|---|---|---|
 | 2026-08-04 19:40 UTC | 升级售后商家审核任务表 | 44 | 19 秒 | ✅ 无 bug fix |
+| 2026-08-04 21:14 UTC | 升级售后商家审核任务表 (wiki URL) | 44 | 7 秒 | ✅ v0.2.2 验证: wiki URL + _SCHEMA 默认 |
+| 2026-08-04 21:15 UTC | 升级售后判责规则 (回归) | 18 | 6 秒 | ✅ v0.2.2 回归测试 |
 
 详细进度见 [references/implementation-plan.md](references/implementation-plan.md)
 
